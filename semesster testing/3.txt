@@ -1,0 +1,59 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class App {
+    public static void main(String[] args) throws Exception {
+
+        System.setProperty("webdriver.chrome.driver",
+                "D:\\testing\\signup\\src\\driver\\chromedriver.exe");
+
+        WebDriver driver = new ChromeDriver();
+
+        driver.get("https://www.facebook.com/signup");
+
+        driver.manage().window().maximize();
+
+        WebElement firstName = driver.findElement(By.name("firstname"));
+
+        WebElement lastName = driver.findElement(By.name("lastname"));
+
+        WebElement email = driver.findElement(By.name("reg_email__"));
+
+        WebElement remail = driver.findElement(By.name("reg_email_confirmation__"));
+
+        WebElement pass = driver.findElement(By.name("reg_passwd__"));
+
+        WebElement Bdate = driver.findElement(By.name("birthday_day"));
+
+        WebElement Bmonth = driver.findElement(By.name("birthday_month"));
+
+        WebElement Byear = driver.findElement(By.name("birthday_year"));
+
+        WebElement gender = driver.findElement(By.xpath(
+                "/html/body/div[1]/div[1]/div[1]/div[2]/div/div[2]/div/div/div[1]/form/div[1]/div[7]/span/span[2]/label"));
+
+        WebElement button = driver.findElement(By.name("websubmit"));
+
+        firstName.sendKeys("Sivashanker");
+        lastName.sendKeys("S");
+        email.sendKeys("helo@gmail.com");
+        remail.sendKeys("helo@gmail.com");
+        pass.sendKeys("12abcd");
+        Bdate.sendKeys("5");
+        Bmonth.sendKeys("Sep");
+        Byear.sendKeys("2004");
+
+        if (!gender.isSelected()) {
+            gender.click();
+        }
+
+        button.click();
+
+        Thread.sleep(10000);
+
+        driver.close();
+
+    }
+}

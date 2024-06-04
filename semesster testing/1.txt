@@ -1,0 +1,198 @@
+import java.util.*;
+
+public class App {
+    public static void main(String[] args) throws Exception {
+
+        Scanner sc = new Scanner(System.in);
+
+        DbHelper obj = new DbHelper();
+
+        while (true) {
+            System.out.println("Enter 1 for table creation");
+            System.out.println("Enter 2 for Inserting data");
+            System.out.println("Enter 3 for Reading data");
+            System.out.println("Enter 4 for update");
+            System.out.println("Enter 5 for delete");
+            System.out.println("_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ");
+
+            System.out.println("Your Choice");
+
+            int n = sc.nextInt();
+
+            if (n == 1) {
+                obj.CreateTable();
+            }
+
+            else if (n == 2) {
+                obj.InsertData();
+            }
+
+            else if (n == 3) {
+                obj.ReadData();
+            }
+
+            else if (n == 4) {
+                obj.UpdateData();
+            }
+
+            else if (n == 5) {
+                obj.DeleteData();
+            }
+
+            else {
+                break;
+            }
+        }
+
+    }
+}
+
+
+
+
+
+
+import java.sql.DriverManager;
+import java.sql.*;
+import java.util.*;
+
+public class DbHelper {
+
+    Scanner sc = new Scanner(System.in);
+
+    public void CreateTable() throws Exception {
+
+        String url = "jdbc:mysql://localhost:3306/employee1";
+        String user = "root";
+        String pass = "sivastark";
+
+        String query = "create table mytable3(ID int primary key, Name varchar(20), Address varchar(50), Phone varchar(10))";
+
+        Connection con = DriverManager.getConnection(url, user, pass);
+
+        Statement st = con.createStatement();
+
+        st.executeUpdate(query);
+
+        System.out.println("Table created");
+
+        con.close();
+
+    }
+
+    public void InsertData() throws Exception {
+
+        String url = "jdbc:mysql://localhost:3306/employee1";
+        String user = "root";
+        String pass = "sivastark";
+
+        String query = "insert into mytable3 values (?,?,?,?)";
+
+        System.out.println("Enter the ID");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        System.out.println("Enter the Name");
+        String name = sc.nextLine();
+
+        System.out.println("Enter the address");
+        String add = sc.nextLine();
+
+        System.out.println("Enter the Phone number");
+        String Phone = sc.nextLine();
+
+        Connection con = DriverManager.getConnection(url, user, pass);
+
+        PreparedStatement pst = con.prepareStatement(query);
+
+        pst.setInt(1, id);
+        pst.setString(2, name);
+        pst.setString(3, add);
+        pst.setString(4, Phone);
+
+        pst.executeUpdate();
+
+        System.out.println("Inserted successfully");
+
+        con.close();
+
+    }
+
+    public void ReadData() throws Exception {
+
+        String url = "jdbc:mysql://localhost:3306/employee1";
+        String user = "root";
+        String pass = "sivastark";
+
+        String query = "select * from mytable3";
+
+        Connection con = DriverManager.getConnection(url, user, pass);
+
+        Statement st = con.createStatement();
+
+        ResultSet rt = st.executeQuery(query);
+
+        while (rt.next()) {
+            System.out.println("ID: " + rt.getInt(1));
+            System.out.println("Name: " + rt.getString(2));
+            System.out.println("Address: " + rt.getString(3));
+            System.out.println("Phone: " + rt.getInt(4));
+        }
+
+        con.close();
+
+    }
+
+    public void UpdateData() throws Exception {
+
+        String url = "jdbc:mysql://localhost:3306/employee1";
+        String user = "root";
+        String pass = "sivastark";
+
+        String query = "update mytable3 set name = ? where id = ?";
+
+        System.out.println("Enter the name to be updated");
+        String name = sc.nextLine();
+
+        System.out.println("Enter the id to be updated");
+        int id = sc.nextInt();
+
+        Connection con = DriverManager.getConnection(url, user, pass);
+
+        PreparedStatement pst = con.prepareStatement(query);
+
+        pst.setString(1, name);
+        pst.setInt(2, id);
+
+        pst.executeUpdate();
+
+        System.out.println("Updated successfully");
+
+        con.close();
+
+    }
+
+    public void DeleteData() throws Exception {
+
+        String url = "jdbc:mysql://localhost:3306/employee1";
+        String user = "root";
+        String pass = "sivastark";
+
+        String query = "delete from mytable3 where id = ?";
+
+        System.out.println("Enter the id to be deleted");
+        int id = sc.nextInt();
+
+        Connection con = DriverManager.getConnection(url, user, pass);
+
+        PreparedStatement pst = con.prepareStatement(query);
+
+        pst.setInt(1, id);
+
+        pst.executeUpdate();
+
+        System.out.println("Deleted successfully");
+
+    }
+
+}

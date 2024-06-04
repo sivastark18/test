@@ -1,0 +1,121 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class App {
+    public static void main(String[] args) throws Exception {
+        System.out.println("Press 1 to create table. ");
+        System.out.println("Press 2 to insert the data. ");
+        System.out.println("Press 3 to update the data. ");
+        System.out.println("Press 4 to delete the data. ");
+        System.out.println("Press 5 to read the data. ");
+        Scanner s = new Scanner(System.in);
+        int n = s.nextInt();
+        DatabaseConnection dbc = new DatabaseConnection();
+        try {
+            switch (n) {
+                case 1:
+                    dbc.createTable();
+                    break;
+                case 2:
+                    dbc.insertData();
+                    break;
+                case 3:
+                    dbc.updateData();
+                    break;
+                case 4:
+                    dbc.deleteData();
+                    break;
+                case 5:
+                    dbc.readData();
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+        dbc.closeConnection();
+    }
+
+    static class DatabaseConnection {
+        private String url = "jdbc:mysql://localhost:3306/bms";
+        private String username = "root";
+        private String password = "1234567";
+        private Connection con;
+
+        public DatabaseConnection() throws SQLException {
+            this.con = DriverManager.getConnection(url, username, password);
+        }
+
+        public void closeConnection() throws SQLException {
+            if (con != null && !con.isClosed()) {
+                con.close();
+            }
+        }
+
+        public void createTable() throws SQLException {
+            String query = "create table passenger(pid int primary key, pname varchar(20),address varchar(150),sourcepoint varchar(30),destination varchar(20) ,phoneno varchar(11));";
+            Statement st = con.createStatement();
+            st.executeUpdate(query);
+            System.out.println("Table created.. ");
+            st.close();
+        }
+
+        public void readData() throws SQLException {
+            String query = "select * from passenger";
+            Statement st = con.createStatement();
+            ResultSet rt = st.executeQuery(query);
+            while (rt.next()) {
+                System.out.println("Id: " + rt.getInt(1));
+                System.out.println("Name: " + rt.getString(2));
+                System.out.println("Address: " + rt.getString(3));
+                System.out.println("Source: " + rt.getString(4));
+                System.out.println("Destination: " + rt.getString(5));
+                System.out.println("Phone no: " + rt.getString(6));
+            }
+            System.out.println("Read completed .... ");
+            st.close();
+        }
+
+        public void insertData() throws SQLException {
+            String query = "insert into passenger values (5,'subi','10/20k palakkad ','coimbatore','karur','84587902');";
+            Statement st = con.createStatement();
+            int row = st.executeUpdate(query);
+            System.out.println("Number of rows affected: " + row);
+            st.close();
+        }
+
+        public void updateData() throws SQLException {
+            int id = 2;
+            String name = "tamil";
+            String address = " mgr nagar";
+            String source = "cbm";
+            String destination = "trichy";
+            String phone = "3459453220";
+            String query = "update passenger set pname=?, address=?, sourcepoint=?, destination=?,phoneno =? where pid=?";
+            PreparedStatement pst = con.prepareStatement(query);
+            pst.setString(1, name);
+            pst.setString(2, address);
+            pst.setString(3, source);
+            pst.setString(4, destination);
+            pst.setString(5, phone);
+            pst.setInt(6, id);
+            int row = pst.executeUpdate();
+            System.out.println("Number of rows updated: " + row);
+            pst.close();
+        }
+
+        public void deleteData() throws SQLException {
+            int idToDelete = 2;
+            String query = "delete from passenger where pid=?";
+            PreparedStatement pst = con.prepareStatement(query);
+            pst.setInt(1, idToDelete);
+            int row = pst.executeUpdate();
+            System.out.println("Number of rows deleted: " + row);
+            pst.close();
+        }
+    }
+}
