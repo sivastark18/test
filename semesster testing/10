@@ -1,0 +1,77 @@
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import org.testng.Assert;
+
+public class App {
+
+        WebDriver driver;
+
+        @BeforeMethod
+        public void setup() {
+                System.setProperty("webdriver.chrome.driver",
+                                "D:\\testing\\wait\\src\\driver\\chromedriver.exe");
+                driver = new ChromeDriver();
+                driver.get("https://the-internet.herokuapp.com/login");
+                driver.manage().window().maximize();
+        }
+
+        @AfterMethod
+        public void tearDown() {
+                if (driver != null) {
+                        driver.quit();
+                }
+        }
+
+        private String[] getCredentials() {
+                String[] credentials = new String[2];
+                try {
+                        FileInputStream file = new FileInputStream(
+                                        "D:\\testing\\wait\\src\\file\\hello.xlsx");
+                        Workbook workbook = WorkbookFactory.create(file);
+                        Sheet sheet = workbook.getSheetAt(0);
+                        Row row = sheet.getRow(1);
+                        credentials[0] = row.getCell(0).getStringCellValue();
+                        credentials[1] = row.getCell(1).getStringCellValue();
+                        workbook.close();
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
+                return credentials;
+        }
+
+        @Test
+        public void testLoginSuccess() {
+                String[] credentials = getCredentials();
+                driver.findElement(By.id("username")).sendKeys(credentials[0]);
+                driver.findElement(By.id("password")).sendKeys(credentials[1]);
+                driver.findElement(By.tagName("button")).click();
+
+                WebElement successMessage = driver.findElement(By.cssSelector(".flash.success"));
+                Assert.assertTrue(successMessage.isDisplayed(), "Login was not successful.");
+        }
+
+        @Test
+        public void testLoginFailure() {
+                driver.findElement(By.id("username")).sendKeys("wrong_username");
+                driver.findElement(By.id("password")).sendKeys("wrong_password");
+                driver.findElement(By.tagName("button")).click();
+
+                WebElement errorMessage = driver.findElement(By.cssSelector(".flash.error"));
+                Assert.assertTrue(errorMessage.isDisplayed(), "Login failure message was not displayed.");
+        }
+
+}
